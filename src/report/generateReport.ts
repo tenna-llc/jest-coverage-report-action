@@ -1,6 +1,5 @@
 import { setFailed } from '@actions/core';
-import { getOctokit } from '@actions/github';
-import { context } from '@actions/github';
+import { context, getOctokit } from '@actions/github';
 
 import { fetchPreviousReport } from './fetchPreviousReport';
 import { getReportTag } from '../constants/getReportTag';
@@ -9,6 +8,7 @@ import { getFormattedFailReason } from '../format/getFormattedFailReason';
 import { insertArgs } from '../format/insertArgs';
 import REPORT from '../format/REPORT.md';
 import { FailReason, Report } from '../typings/Report';
+import { RecoverableError } from '../errors/RecoverableError';
 
 export const generateReport = async (
     headReport: Report,
@@ -47,7 +47,7 @@ export const generateReport = async (
                 );
             } else {
                 console.log(
-                    'Skipping reporting without rejecting request, because head is ok, but base branch has not valid coverage.'
+                    'Skipping reporting without rejecting request, because head is ok, but base branch has no valid coverage.'
                 );
 
                 if (previousReport) {
@@ -61,21 +61,23 @@ export const generateReport = async (
             }
         } else {
             failReason = failReason ?? FailReason.UNKNOWN_ERROR;
-            reportContent = getFormattedFailReason(
-                failReason,
-                coverageThreshold,
-                headReport.summary?.find(
-                    (value) => value.title === 'Statements'
-                )?.percentage,
-                headReport.error
-            );
+
             if (
-                failReason === FailReason.UNDER_THRESHOLD &&
+                headReport.failReason &&
+                [
+                    FailReason.UNDER_THRESHOLD,
+                    FailReason.DIFF_UNDER_THRESHOLD,
+                    FailReason.NEW_FILES_UNDER_THRESHOLD,
+                ].includes(headReport.failReason) &&
                 headReport.summary &&
                 headReport.details &&
                 baseReport.summary &&
                 baseReport.details
             ) {
+                reportContent = getFormattedFailReason(
+                    failReason,
+                    (headReport.error as RecoverableError).params
+                );
                 reportContent = reportContent.concat(
                     '\n',
                     getFormattedCoverage(
@@ -85,6 +87,12 @@ export const generateReport = async (
                         baseReport.details,
                         coverageThreshold
                     )
+                );
+            } else {
+                reportContent = getFormattedFailReason(
+                    failReason,
+                    {},
+                    headReport.error
                 );
             }
         }

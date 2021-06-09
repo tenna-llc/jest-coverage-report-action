@@ -5,7 +5,7 @@ import { context, getOctokit } from '@actions/github';
 
 import { collectCoverage } from './collect/collectCoverage';
 import { generateReport } from './report/generateReport';
-import { FailReason } from './typings/Report';
+import { verifyThresholds } from './report/verifyThresholds';
 
 async function run() {
     try {
@@ -25,10 +25,20 @@ async function run() {
             testScript,
             coverageThresholdStr,
             workingDirectory,
+            coverageDiffThresholdStr,
+            newFilesCoverageThresholdStr,
         ] = argv.slice(2);
 
         const coverageThreshold = coverageThresholdStr
             ? parseFloat(coverageThresholdStr)
+            : undefined;
+
+        const coverageDiffThreshold = coverageDiffThresholdStr
+            ? parseFloat(coverageDiffThresholdStr)
+            : undefined;
+
+        const newFilesCoverageThreshold = newFilesCoverageThresholdStr
+            ? parseFloat(newFilesCoverageThresholdStr)
             : undefined;
 
         if (
@@ -53,18 +63,13 @@ async function run() {
             workingDirectory
         );
 
-        if (
-            coverageThreshold !== undefined &&
-            headReport.success &&
-            headReport.summary &&
-            headReport.details &&
-            !headReport.failReason &&
-            headReport.summary.find((value) => value.title === 'Statements')!
-                .percentage < coverageThreshold
-        ) {
-            headReport.success = false;
-            headReport.failReason = FailReason.UNDER_THRESHOLD;
-        }
+        const actionParams = {
+            coverageThreshold,
+            coverageDiffThreshold,
+            newFilesCoverageThreshold,
+        };
+
+        verifyThresholds(headReport, baseReport, actionParams);
 
         await generateReport(
             headReport,
