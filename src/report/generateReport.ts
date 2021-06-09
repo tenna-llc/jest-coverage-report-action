@@ -14,6 +14,9 @@ export const generateReport = async (
     headReport: Report,
     baseReport: Report,
     coverageThreshold: number | undefined,
+    coverageDiffThreshold: number | undefined,
+    newFilesCoverageThreshold: number | undefined,
+    newFilesAverageCoverage: number | undefined,
     repo: { owner: string; repo: string },
     pr: { number: number },
     octokit: ReturnType<typeof getOctokit>,
@@ -64,13 +67,20 @@ export const generateReport = async (
             reportContent = getFormattedFailReason(
                 failReason,
                 coverageThreshold,
+                coverageDiffThreshold,
+                newFilesCoverageThreshold,
+                newFilesAverageCoverage,
                 headReport.summary?.find(
                     (value) => value.title === 'Statements'
                 )?.percentage,
                 headReport.error
             );
             if (
-                failReason === FailReason.UNDER_THRESHOLD &&
+                [
+                    FailReason.UNDER_THRESHOLD,
+                    FailReason.DIFF_UNDER_THRESHOLD,
+                    FailReason.NEW_FILES_UNDER_THRESHOLD,
+                ].includes(failReason) &&
                 headReport.summary &&
                 headReport.details &&
                 baseReport.summary &&

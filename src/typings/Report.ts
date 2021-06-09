@@ -4,6 +4,8 @@ export enum FailReason {
     TESTS_FAILED = 'testsFailed',
     INVALID_COVERAGE_FORMAT = 'invalidFormat',
     UNDER_THRESHOLD = 'underThreshold',
+    NEW_FILES_UNDER_THRESHOLD = 'newFilesUnderThreshold',
+    DIFF_UNDER_THRESHOLD = 'diffUnderThreshold',
     UNKNOWN_ERROR = 'unknownError',
 }
 

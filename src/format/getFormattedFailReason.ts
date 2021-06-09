@@ -9,6 +9,9 @@ const errorToDisplay = (error?: Error) =>
 export const getFormattedFailReason = (
     reason: FailReason,
     coverageThreshold?: number,
+    coverageDiffThreshold?: number,
+    newFilesCoverageThreshold?: number,
+    newFilesAverageCoverage?: number,
     currentCoverage?: number,
     error?: Error
 ): string =>
@@ -16,5 +19,12 @@ export const getFormattedFailReason = (
         coverageThreshold:
             coverageThreshold && decimalToString(coverageThreshold),
         currentCoverage: currentCoverage && decimalToString(currentCoverage),
+        coverageDiffThreshold:
+            coverageDiffThreshold && decimalToString(coverageDiffThreshold),
+        newFilesCoverageThreshold:
+            newFilesCoverageThreshold &&
+            decimalToString(newFilesCoverageThreshold),
+        newFilesAverageCoverage:
+            newFilesAverageCoverage && decimalToString(newFilesAverageCoverage),
         coveragePath: 'report.json',
     })}${errorToDisplay(error)}`;
