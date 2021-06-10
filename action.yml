@@ -18,6 +18,14 @@ inputs:
     working_directory:
         required: false
         description: 'Custom working directory'
+    icons:
+        required: false
+        description: 'Which icons to use. Available choices: emoji, ascii'
+        default: emoji
+    annotations:
+        required: false
+        description: 'What type of annotations show. Options: none, all'
+        default: all
     diff_threshold:
         required: false
         description: 'Coverage difference threshold. If base and head branch total coverage decrease is more than threshold, PR will be rejected'
@@ -32,3 +40,5 @@ runs:
         - ${{ inputs.test_script }}
         - ${{ inputs.threshold }}
         - ${{ inputs.working_directory }}
+        - ${{ inputs.icons }}
+        - ${{ inputs.annotations }}

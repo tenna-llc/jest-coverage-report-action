@@ -6,11 +6,13 @@ import { fetchPreviousReport } from './fetchPreviousReport';
 import { getReportTag } from '../constants/getReportTag';
 import { getFormattedCoverage } from '../format/getFormattedCoverage';
 import { getFormattedFailReason } from '../format/getFormattedFailReason';
+import { Icons } from '../format/Icons';
 import { insertArgs } from '../format/insertArgs';
 import REPORT from '../format/REPORT.md';
 import { FailReason, Report } from '../typings/Report';
 
 export const generateReport = async (
+    icons: Icons,
     headReport: Report,
     baseReport: Report,
     coverageThreshold: number | undefined,
@@ -42,6 +44,7 @@ export const generateReport = async (
                 !baseReport.failReason
             ) {
                 reportContent = getFormattedCoverage(
+                    icons,
                     headReport.summary,
                     baseReport.summary,
                     headReport.details,
@@ -66,6 +69,7 @@ export const generateReport = async (
             failReason = failReason ?? FailReason.UNKNOWN_ERROR;
             reportContent = getFormattedFailReason(
                 failReason,
+                icons,
                 coverageThreshold,
                 coverageDiffThreshold,
                 newFilesCoverageThreshold,
@@ -89,6 +93,7 @@ export const generateReport = async (
                 reportContent = reportContent.concat(
                     '\n',
                     getFormattedCoverage(
+                        icons,
                         headReport.summary,
                         baseReport.summary,
                         headReport.details,
