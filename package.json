@@ -23,12 +23,14 @@
         "markdown-table": "^2.0.0"
     },
     "devDependencies": {
+        "@types/clone-deep": "^4.0.1",
         "@types/fs-extra": "^9.0.11",
         "@types/jest": "^26.0.20",
         "@types/markdown-table": "^2.0.0",
         "@types/node": "^14.14.20",
         "@typescript-eslint/eslint-plugin": "^4.12.0",
         "@typescript-eslint/parser": "^4.12.0",
+        "clone-deep": "^4.0.1",
         "eslint": "^7.17.0",
         "eslint-config-prettier": "^7.1.0",
         "eslint-plugin-prettier": "^3.3.1",

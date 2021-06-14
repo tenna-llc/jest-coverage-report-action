@@ -8,23 +8,19 @@ const errorToDisplay = (error?: Error) =>
 
 export const getFormattedFailReason = (
     reason: FailReason,
-    coverageThreshold?: number,
-    coverageDiffThreshold?: number,
-    newFilesCoverageThreshold?: number,
-    newFilesAverageCoverage?: number,
-    currentCoverage?: number,
+    replacements: Record<string, number> = {},
     error?: Error
-): string =>
-    `${errorIcon} ${insertArgs(errors[reason], {
-        coverageThreshold:
-            coverageThreshold && decimalToString(coverageThreshold),
-        currentCoverage: currentCoverage && decimalToString(currentCoverage),
-        coverageDiffThreshold:
-            coverageDiffThreshold && decimalToString(coverageDiffThreshold),
-        newFilesCoverageThreshold:
-            newFilesCoverageThreshold &&
-            decimalToString(newFilesCoverageThreshold),
-        newFilesAverageCoverage:
-            newFilesAverageCoverage && decimalToString(newFilesAverageCoverage),
+): string => {
+    const replacementMap = Object.keys(replacements).reduce(
+        (replacementMap: Record<string, string> = {}, key: string) => {
+            const value = replacements[key];
+            replacementMap[key] = decimalToString(value);
+            return replacementMap;
+        },
+        {}
+    );
+    return `${errorIcon} ${insertArgs(errors[reason], {
+        ...replacementMap,
         coveragePath: 'report.json',
     })}${errorToDisplay(error)}`;
+};

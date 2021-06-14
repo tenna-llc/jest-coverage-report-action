@@ -1,6 +1,5 @@
 import { setFailed } from '@actions/core';
-import { getOctokit } from '@actions/github';
-import { context } from '@actions/github';
+import { context, getOctokit } from '@actions/github';
 
 import { fetchPreviousReport } from './fetchPreviousReport';
 import { getReportTag } from '../constants/getReportTag';
@@ -9,23 +8,29 @@ import { getFormattedFailReason } from '../format/getFormattedFailReason';
 import { insertArgs } from '../format/insertArgs';
 import REPORT from '../format/REPORT.md';
 import { FailReason, Report } from '../typings/Report';
+import { ActionParams } from '../typings/Action';
+import { RecoverableError } from '../errors/RecoverableError';
+import { verifyThresholds } from './verifyThresholds';
 
 export const generateReport = async (
     headReport: Report,
     baseReport: Report,
-    coverageThreshold: number | undefined,
-    coverageDiffThreshold: number | undefined,
-    newFilesCoverageThreshold: number | undefined,
-    newFilesAverageCoverage: number | undefined,
     repo: { owner: string; repo: string },
     pr: { number: number },
     octokit: ReturnType<typeof getOctokit>,
-    dir?: string
+    actionParams: ActionParams
 ) => {
-    const previousReport = await fetchPreviousReport(octokit, repo, pr, dir);
+    const { coverageThreshold, workingDirectory } = actionParams;
 
+    const previousReport = await fetchPreviousReport(
+        octokit,
+        repo,
+        pr,
+        workingDirectory
+    );
     try {
         let reportContent = '';
+        verifyThresholds(headReport, baseReport, actionParams);
 
         let failReason = headReport.failReason;
 
@@ -50,7 +55,7 @@ export const generateReport = async (
                 );
             } else {
                 console.log(
-                    'Skipping reporting without rejecting request, because head is ok, but base branch has not valid coverage.'
+                    'Skipping reporting without rejecting request, because head is ok, but base branch has no valid coverage.'
                 );
 
                 if (previousReport) {
@@ -64,28 +69,19 @@ export const generateReport = async (
             }
         } else {
             failReason = failReason ?? FailReason.UNKNOWN_ERROR;
-            reportContent = getFormattedFailReason(
-                failReason,
-                coverageThreshold,
-                coverageDiffThreshold,
-                newFilesCoverageThreshold,
-                newFilesAverageCoverage,
-                headReport.summary?.find(
-                    (value) => value.title === 'Statements'
-                )?.percentage,
-                headReport.error
-            );
+
             if (
-                [
-                    FailReason.UNDER_THRESHOLD,
-                    FailReason.DIFF_UNDER_THRESHOLD,
-                    FailReason.NEW_FILES_UNDER_THRESHOLD,
-                ].includes(failReason) &&
+                headReport.error &&
+                headReport.error instanceof RecoverableError &&
                 headReport.summary &&
                 headReport.details &&
                 baseReport.summary &&
                 baseReport.details
             ) {
+                reportContent = getFormattedFailReason(
+                    failReason,
+                    headReport.error.params
+                );
                 reportContent = reportContent.concat(
                     '\n',
                     getFormattedCoverage(
@@ -96,14 +92,20 @@ export const generateReport = async (
                         coverageThreshold
                     )
                 );
+            } else {
+                reportContent = getFormattedFailReason(
+                    failReason,
+                    {},
+                    headReport.error
+                );
             }
         }
 
         const reportBody = insertArgs(REPORT, {
-            head: getReportTag(dir),
+            head: getReportTag(workingDirectory),
             body: reportContent,
             sha: context.payload.after,
-            dir: dir ? `for \`${dir}\`` : '',
+            dir: workingDirectory ? `for \`${workingDirectory}\`` : '',
         });
 
         if (previousReport) {

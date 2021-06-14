@@ -1,0 +1,47 @@
+{
+    "success": true,
+    "summary": [
+        {
+            "title": "Statements",
+            "total": 210,
+            "covered": 32,
+            "percentage": 15.238095238095239
+        },
+        {
+            "title": "Branches",
+            "total": 81,
+            "covered": 4,
+            "percentage": 4.938271604938271
+        },
+        { "title": "Functions", "total": 40, "covered": 7, "percentage": 17.5 },
+        {
+            "title": "Lines",
+            "total": 352,
+            "covered": 59,
+            "percentage": 16.761363636363637
+        }
+    ],
+    "details": {
+        "D:\\\\Git\\\\jest-coverage-report-action\\\\src\\\\format\\\\utils\\\\decimalToString.ts": {
+            "filename": "D:\\\\Git\\\\jest-coverage-report-action\\\\src\\\\format\\\\utils\\\\decimalToString.ts",
+            "statements": 100,
+            "functions": 100,
+            "branches": 100,
+            "lines": 100
+        },
+        "D:\\\\Git\\\\jest-coverage-report-action\\\\src\\\\collect\\\\parseCoverageSummary.ts": {
+            "filename": "D:\\\\Git\\\\jest-coverage-report-action\\\\src\\\\collect\\\\parseCoverageSummary.ts",
+            "statements": 100,
+            "functions": 100,
+            "branches": 100,
+            "lines": 100
+        },
+        "D:\\\\Git\\\\jest-coverage-report-action\\\\src\\\\collect\\\\parseCoverageDetails.ts": {
+            "filename": "D:\\\\Git\\\\jest-coverage-report-action\\\\src\\\\collect\\\\parseCoverageDetails.ts",
+            "statements": 100,
+            "functions": 100,
+            "branches": 100,
+            "lines": 100
+        }
+    }
+}

@@ -16,3 +16,4 @@ export type Report = {
     failReason?: FailReason;
     error?: Error;
 };
+
