@@ -32,3 +32,5 @@ runs:
         - ${{ inputs.test_script }}
         - ${{ inputs.threshold }}
         - ${{ inputs.working_directory }}
+        - ${{ inputs.diff_threshold }}
+        - ${{ inputs.new_files_threshold }}
