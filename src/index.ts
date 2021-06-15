@@ -5,6 +5,7 @@ import { context, getOctokit } from '@actions/github';
 
 import { collectCoverage } from './collect/collectCoverage';
 import { generateReport } from './report/generateReport';
+import { verifyThresholds } from './report/verifyThresholds';
 
 async function run() {
     try {
@@ -66,15 +67,18 @@ async function run() {
             coverageThreshold,
             coverageDiffThreshold,
             newFilesCoverageThreshold,
-            workingDirectory,
         };
+
+        verifyThresholds(headReport, baseReport, actionParams);
+
         await generateReport(
             headReport,
             baseReport,
+            coverageThreshold,
             repo,
             pull_request,
             octokit,
-            actionParams
+            workingDirectory
         );
     } catch (error) {
         setFailed(error.message);

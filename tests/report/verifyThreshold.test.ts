@@ -58,9 +58,18 @@ describe('verifyThresholds', () => {
                 headReport.summary[0].percentage = 10;
             }
         });
-        it('should pass if coverage above threshold', async () => {
+        it('should pass if coverage diff above threshold', async () => {
             verifyThresholds(headReport, baseReport, {
                 coverageDiffThreshold: 10,
+            });
+
+            expect(headReport.failReason).toBeUndefined();
+
+            if (baseReport.summary && baseReport.summary[0]) {
+                baseReport.summary[0].percentage = 10;
+            }
+            verifyThresholds(headReport, baseReport, {
+                coverageDiffThreshold: 0,
             });
 
             expect(headReport.failReason).toBeUndefined();

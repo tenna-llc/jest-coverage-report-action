@@ -6,6 +6,6 @@ export function passesCoverageThreshold(
 ): boolean {
     return (
         headReport.summary!.find((value) => value.title === 'Statements')!
-            .percentage > coverageThreshold
+            .percentage >= coverageThreshold
     );
 }

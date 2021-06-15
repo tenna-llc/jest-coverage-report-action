@@ -8,29 +8,21 @@ import { getFormattedFailReason } from '../format/getFormattedFailReason';
 import { insertArgs } from '../format/insertArgs';
 import REPORT from '../format/REPORT.md';
 import { FailReason, Report } from '../typings/Report';
-import { ActionParams } from '../typings/Action';
 import { RecoverableError } from '../errors/RecoverableError';
-import { verifyThresholds } from './verifyThresholds';
 
 export const generateReport = async (
     headReport: Report,
     baseReport: Report,
+    coverageThreshold: number | undefined,
     repo: { owner: string; repo: string },
     pr: { number: number },
     octokit: ReturnType<typeof getOctokit>,
-    actionParams: ActionParams
+    dir?: string
 ) => {
-    const { coverageThreshold, workingDirectory } = actionParams;
+    const previousReport = await fetchPreviousReport(octokit, repo, pr, dir);
 
-    const previousReport = await fetchPreviousReport(
-        octokit,
-        repo,
-        pr,
-        workingDirectory
-    );
     try {
         let reportContent = '';
-        verifyThresholds(headReport, baseReport, actionParams);
 
         let failReason = headReport.failReason;
 
@@ -106,10 +98,10 @@ export const generateReport = async (
         }
 
         const reportBody = insertArgs(REPORT, {
-            head: getReportTag(workingDirectory),
+            head: getReportTag(dir),
             body: reportContent,
             sha: context.payload.after,
-            dir: workingDirectory ? `for \`${workingDirectory}\`` : '',
+            dir: dir ? `for \`${dir}\`` : '',
         });
 
         if (previousReport) {

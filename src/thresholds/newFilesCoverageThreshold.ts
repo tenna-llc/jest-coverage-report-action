@@ -1,12 +1,10 @@
 import { CoverageDetailsMap } from '../typings/Coverage';
-import { getNewFilesCoverage } from '../format/getters/getNewFilesCoverage';
-import { Report } from '../typings/Report';
 
 export function passesNewFilesCoverageThreshold(
     newFilesAverageCoverage: number,
     newFilesCoverageThreshold: number
 ): boolean {
-    return newFilesAverageCoverage > newFilesCoverageThreshold;
+    return newFilesAverageCoverage >= newFilesCoverageThreshold;
 }
 
 export function getAverageCoverage(

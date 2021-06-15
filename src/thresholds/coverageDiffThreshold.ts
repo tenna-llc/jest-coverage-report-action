@@ -10,5 +10,5 @@ export function passesCoverageDiffThreshold(
         coverageDiff < coverageDiffThreshold
     );
 
-    return coverageDiff < coverageDiffThreshold;
+    return coverageDiff <= coverageDiffThreshold;
 }
