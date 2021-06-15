@@ -27,6 +27,8 @@ export const verifyThresholds = (
     const previousCoverage = baseReport.summary?.find(
         (value) => value.title === 'Statements'
     )?.percentage;
+    console.log('[DEBUG] headReport=', JSON.stringify(headReport));
+    console.log('[DEBUG] baseReport=', JSON.stringify(baseReport));
     if (
         typeof coverageThreshold !== 'undefined' &&
         !passesCoverageThreshold(headReport, coverageThreshold) &&
@@ -38,7 +40,9 @@ export const verifyThresholds = (
             currentCoverage,
             coverageThreshold
         );
-    } else if (
+    }
+
+    if (
         headReport.success &&
         headReport.summary &&
         headReport.details &&
@@ -47,6 +51,7 @@ export const verifyThresholds = (
         baseReport.details
     ) {
         if (
+            !headReport.error &&
             typeof coverageDiffThreshold !== 'undefined' &&
             !passesCoverageDiffThreshold(
                 headReport,
@@ -63,7 +68,9 @@ export const verifyThresholds = (
                 currentCoverage,
                 coverageDiffThreshold
             );
-        } else {
+        }
+
+        if (!headReport.error) {
             const newFilesCoverage = getNewFilesCoverage(
                 headReport.details!,
                 baseReport.details!
@@ -90,4 +97,7 @@ export const verifyThresholds = (
             }
         }
     }
+
+    console.log('[DEBUG] thresholds headReport=', JSON.stringify(headReport));
+    console.log('[DEBUG] thresholds baseReport=', JSON.stringify(baseReport));
 };

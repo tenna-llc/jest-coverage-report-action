@@ -73,6 +73,7 @@ describe('verifyThresholds', () => {
         it('should error out if coverage below threshold', async () => {
             verifyThresholds(headReport, baseReport, {
                 coverageDiffThreshold: 2,
+                coverageThreshold: 15,
             });
 
             expect(headReport.failReason).toEqual(
@@ -102,6 +103,26 @@ describe('verifyThresholds', () => {
                 )?.percentage
             );
         });
+
+        it('should not override error from another threshold', async () => {
+            verifyThresholds(headReport, baseReport, {
+                coverageThreshold: 80,
+                coverageDiffThreshold: 2,
+            });
+
+            expect(headReport.failReason).toEqual(FailReason.UNDER_THRESHOLD);
+            expect(
+                (headReport.error as UnderThresholdError).params
+                    .coverageThreshold
+            ).toEqual(80);
+            expect(
+                (headReport.error as UnderThresholdError).params.currentCoverage
+            ).toEqual(
+                headReport.summary?.find(
+                    (value: CoverageSummary) => value.title === 'Statements'
+                )?.percentage
+            );
+        });
     });
     describe('new files coverage threshold', () => {
         let baseReport: Report;
@@ -109,6 +130,9 @@ describe('verifyThresholds', () => {
         beforeEach(() => {
             baseReport = cloneDeep(BaseReport) as Report;
             headReport = cloneDeep(HeadReport) as Report;
+            if (baseReport.summary && baseReport.summary[0]) {
+                baseReport.summary[0].percentage = 10;
+            }
         });
         it('should pass if coverage above threshold', async () => {
             verifyThresholds(headReport, baseReport, {
@@ -125,6 +149,8 @@ describe('verifyThresholds', () => {
         it('should error out if coverage below threshold', async () => {
             verifyThresholds(headReport, baseReport, {
                 newFilesCoverageThreshold: 90,
+                coverageDiffThreshold: 10,
+                coverageThreshold: 15,
             });
 
             expect(headReport.failReason).toEqual(
@@ -140,6 +166,40 @@ describe('verifyThresholds', () => {
                 (headReport.error as NewFilesUnderThresholdError).params
                     .newFilesCoverageThreshold
             ).toEqual(90);
+        });
+        it('should not override error from another threshold', async () => {
+            verifyThresholds(headReport, baseReport, {
+                coverageDiffThreshold: 2,
+                newFilesCoverageThreshold: 90,
+                coverageThreshold: 15,
+            });
+
+            expect(headReport.failReason).toEqual(
+                FailReason.DIFF_UNDER_THRESHOLD
+            );
+
+            expect(
+                (headReport.error as DiffUnderThresholdError).params
+                    .coverageDiffThreshold
+            ).toEqual(2);
+
+            expect(
+                (headReport.error as DiffUnderThresholdError).params
+                    .previousCoverage
+            ).toEqual(
+                baseReport.summary?.find(
+                    (value: CoverageSummary) => value.title === 'Statements'
+                )?.percentage
+            );
+
+            expect(
+                (headReport.error as DiffUnderThresholdError).params
+                    .currentCoverage
+            ).toEqual(
+                headReport.summary?.find(
+                    (value: CoverageSummary) => value.title === 'Statements'
+                )?.percentage
+            );
         });
     });
 });
