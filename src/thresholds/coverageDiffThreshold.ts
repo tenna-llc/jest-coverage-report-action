@@ -13,6 +13,6 @@ export function passesCoverageDiffThreshold(
         (value) => value.title === 'Statements'
     )!.percentage;
 
-    const coverageDiff = headCoveragePercentage - baseCoveragePercentage;
+    const coverageDiff = baseCoveragePercentage - headCoveragePercentage;
     return coverageDiff < coverageDiffThreshold;
 }

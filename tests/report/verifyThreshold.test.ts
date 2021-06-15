@@ -54,8 +54,8 @@ describe('verifyThresholds', () => {
         beforeEach(() => {
             baseReport = cloneDeep(BaseReport) as Report;
             headReport = cloneDeep(HeadReport) as Report;
-            if (baseReport.summary && baseReport.summary[0]) {
-                baseReport.summary[0].percentage = 10;
+            if (headReport.summary && headReport.summary[0]) {
+                headReport.summary[0].percentage = 10;
             }
         });
         it('should pass if coverage above threshold', async () => {
@@ -73,7 +73,7 @@ describe('verifyThresholds', () => {
         it('should error out if coverage below threshold', async () => {
             verifyThresholds(headReport, baseReport, {
                 coverageDiffThreshold: 2,
-                coverageThreshold: 15,
+                coverageThreshold: 5,
             });
 
             expect(headReport.failReason).toEqual(
@@ -130,8 +130,8 @@ describe('verifyThresholds', () => {
         beforeEach(() => {
             baseReport = cloneDeep(BaseReport) as Report;
             headReport = cloneDeep(HeadReport) as Report;
-            if (baseReport.summary && baseReport.summary[0]) {
-                baseReport.summary[0].percentage = 10;
+            if (headReport.summary && headReport.summary[0]) {
+                headReport.summary[0].percentage = 10;
             }
         });
         it('should pass if coverage above threshold', async () => {
@@ -150,7 +150,7 @@ describe('verifyThresholds', () => {
             verifyThresholds(headReport, baseReport, {
                 newFilesCoverageThreshold: 90,
                 coverageDiffThreshold: 10,
-                coverageThreshold: 15,
+                coverageThreshold: 5,
             });
 
             expect(headReport.failReason).toEqual(
@@ -171,7 +171,7 @@ describe('verifyThresholds', () => {
             verifyThresholds(headReport, baseReport, {
                 coverageDiffThreshold: 2,
                 newFilesCoverageThreshold: 90,
-                coverageThreshold: 15,
+                coverageThreshold: 5,
             });
 
             expect(headReport.failReason).toEqual(
