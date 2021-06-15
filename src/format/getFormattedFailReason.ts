@@ -19,6 +19,7 @@ export const getFormattedFailReason = (
         },
         {}
     );
+    console.log('[DEBUG] replacementMap=', JSON.stringify(replacementMap));
     return `${errorIcon} ${insertArgs(errors[reason], {
         ...replacementMap,
         coveragePath: 'report.json',

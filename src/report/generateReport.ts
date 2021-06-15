@@ -71,8 +71,12 @@ export const generateReport = async (
             failReason = failReason ?? FailReason.UNKNOWN_ERROR;
 
             if (
-                headReport.error &&
-                headReport.error instanceof RecoverableError &&
+                headReport.failReason &&
+                [
+                    FailReason.UNDER_THRESHOLD,
+                    FailReason.DIFF_UNDER_THRESHOLD,
+                    FailReason.NEW_FILES_UNDER_THRESHOLD,
+                ].includes(headReport.failReason) &&
                 headReport.summary &&
                 headReport.details &&
                 baseReport.summary &&
@@ -80,7 +84,7 @@ export const generateReport = async (
             ) {
                 reportContent = getFormattedFailReason(
                     failReason,
-                    headReport.error.params
+                    (headReport.error as RecoverableError).params
                 );
                 reportContent = reportContent.concat(
                     '\n',
