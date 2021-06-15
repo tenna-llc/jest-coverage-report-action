@@ -86,12 +86,12 @@ export const verifyThresholds = (
             );
         }
 
-        if (!headReport.error) {
-            const newFilesCoverage = getNewFilesCoverage(
-                headReport.details!,
-                baseReport.details!
-            );
+        const newFilesCoverage = getNewFilesCoverage(
+            headReport.details!,
+            baseReport.details!
+        );
 
+        if (!headReport.error && Object.keys(newFilesCoverage).length > 0) {
             const newFilesAverageCoverage = getAverageCoverage(
                 newFilesCoverage
             );

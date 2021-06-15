@@ -24,11 +24,6 @@ describe('verifyThresholds', () => {
 
             expect(headReport.failReason).toBeUndefined();
         });
-        it('should pass if no threshold specified', async () => {
-            verifyThresholds(headReport, baseReport);
-
-            expect(headReport.failReason).toBeUndefined();
-        });
         it('should error out if coverage below threshold', async () => {
             verifyThresholds(headReport, baseReport, {
                 coverageThreshold: 80,
@@ -71,11 +66,6 @@ describe('verifyThresholds', () => {
             verifyThresholds(headReport, baseReport, {
                 coverageDiffThreshold: 0,
             });
-
-            expect(headReport.failReason).toBeUndefined();
-        });
-        it('should pass if no threshold specified', async () => {
-            verifyThresholds(headReport, baseReport);
 
             expect(headReport.failReason).toBeUndefined();
         });
@@ -152,6 +142,11 @@ describe('verifyThresholds', () => {
         });
         it('should pass if no threshold specified', async () => {
             verifyThresholds(headReport, baseReport);
+
+            expect(headReport.failReason).toBeUndefined();
+        });
+        it('should pass if no new files created', async () => {
+            verifyThresholds(headReport, headReport);
 
             expect(headReport.failReason).toBeUndefined();
         });
