@@ -24,9 +24,7 @@ export const verifyThresholds = (
     const currentCoverage = headReport.summary?.find(
         (value) => value.title === 'Statements'
     )?.percentage;
-    const previousCoverage = baseReport.summary?.find(
-        (value) => value.title === 'Statements'
-    )?.percentage;
+    console.log('[DEBUG] actionParams=', JSON.stringify(actionParams));
     console.log('[DEBUG] headReport=', JSON.stringify(headReport));
     console.log('[DEBUG] baseReport=', JSON.stringify(baseReport));
     if (
@@ -50,16 +48,34 @@ export const verifyThresholds = (
         baseReport.summary &&
         baseReport.details
     ) {
+        const previousCoverage = baseReport.summary?.find(
+            (value) => value.title === 'Statements'
+        )?.percentage;
+
+        console.log('[DEBUG] previousCoverage=', previousCoverage);
+        console.log('[DEBUG] currentCoverage=', currentCoverage);
+        console.log(
+            '[DEBUG] passesCoverageDiffThreshold=',
+            !headReport.error &&
+                typeof coverageDiffThreshold !== 'undefined' &&
+                !passesCoverageDiffThreshold(
+                    currentCoverage!,
+                    previousCoverage!,
+                    coverageDiffThreshold
+                ) &&
+                typeof previousCoverage !== 'undefined' &&
+                typeof currentCoverage !== 'undefined'
+        );
         if (
             !headReport.error &&
             typeof coverageDiffThreshold !== 'undefined' &&
-            !passesCoverageDiffThreshold(
-                headReport,
-                baseReport,
-                coverageDiffThreshold
-            ) &&
             typeof previousCoverage !== 'undefined' &&
-            typeof currentCoverage !== 'undefined'
+            typeof currentCoverage !== 'undefined' &&
+            !passesCoverageDiffThreshold(
+                currentCoverage,
+                previousCoverage,
+                coverageDiffThreshold
+            )
         ) {
             headReport.success = false;
             headReport.failReason = FailReason.DIFF_UNDER_THRESHOLD;
@@ -79,14 +95,26 @@ export const verifyThresholds = (
             const newFilesAverageCoverage = getAverageCoverage(
                 newFilesCoverage
             );
+            console.log('[DEBUG] newFilesCoverage=', newFilesCoverage);
+            console.log(
+                '[DEBUG] newFilesAverageCoverage=',
+                newFilesAverageCoverage
+            );
+            console.log(
+                '[DEBUG] passesNewFilesCoverageThreshold=',
+                passesNewFilesCoverageThreshold(
+                    newFilesAverageCoverage,
+                    newFilesCoverageThreshold || 0
+                )
+            );
 
             if (
                 typeof newFilesCoverageThreshold !== 'undefined' &&
+                typeof newFilesAverageCoverage !== 'undefined' &&
                 !passesNewFilesCoverageThreshold(
                     newFilesAverageCoverage,
                     newFilesCoverageThreshold
-                ) &&
-                typeof newFilesCoverageThreshold !== 'undefined'
+                )
             ) {
                 headReport.success = false;
                 headReport.failReason = FailReason.NEW_FILES_UNDER_THRESHOLD;

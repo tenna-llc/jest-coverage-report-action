@@ -1,18 +1,14 @@
-import { Report } from '../typings/Report';
-
 export function passesCoverageDiffThreshold(
-    headReport: Report,
-    baseReport: Report,
+    headCoveragePercentage: number,
+    baseCoveragePercentage: number,
     coverageDiffThreshold: number
 ): boolean {
-    const headCoveragePercentage = headReport.summary!.find(
-        (value) => value.title === 'Statements'
-    )!.percentage;
-
-    const baseCoveragePercentage = baseReport.summary!.find(
-        (value) => value.title === 'Statements'
-    )!.percentage;
-
     const coverageDiff = baseCoveragePercentage - headCoveragePercentage;
+    console.log('[DEBUG] coverageDiff=', coverageDiff);
+    console.log(
+        '[DEBUG] passesCoverageDiffThreshold=',
+        coverageDiff < coverageDiffThreshold
+    );
+
     return coverageDiff < coverageDiffThreshold;
 }
