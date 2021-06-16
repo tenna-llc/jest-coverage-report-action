@@ -28,6 +28,9 @@ async function run() {
             coverageDiffThresholdStr,
             newFilesCoverageThresholdStr,
         ] = argv.slice(2);
+        console.log('[DEBUG] coverageThresholdStr=', coverageThresholdStr)
+        console.log('[DEBUG] coverageDiffThresholdStr=', coverageDiffThresholdStr)
+        console.log('[DEBUG] newFilesCoverageThresholdStr=', newFilesCoverageThresholdStr)
 
         const coverageThreshold = coverageThresholdStr
             ? parseFloat(coverageThresholdStr)
