@@ -6,6 +6,11 @@ FROM node:16
 # base-branch fetch/checkout for coverage diffing works.
 RUN git config --system --add safe.directory '*'
 
+# The action runs `npm i` for both head and base branches. npm 8 reconciling an
+# older (lockfileVersion 1) base-branch lockfile refetches registry metadata for
+# the whole tree and exhausts Node's default ~2GB heap. Raise the limit.
+ENV NODE_OPTIONS=--max-old-space-size=6144
+
 COPY dist/index.js /index.js
 
 ENTRYPOINT ["node", "/index.js"]
